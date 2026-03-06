@@ -1,18 +1,8 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import jwt from 'jsonwebtoken';
 
-// ZhipuAI (GLM) requires a specific JWT generation for API Key
-const generateZhipuToken = (apiKey: string) => {
-  const [id, secret] = apiKey.split('.');
-  const payload = {
-    api_key: id,
-    exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiration
-    timestamp: Math.floor(Date.now() / 1000),
-  };
-  // @ts-ignore
-  return jwt.sign(payload, secret, { algorithm: 'HS256', header: { sign_type: 'SIGN' } });
-};
+// DeepSeek API Configuration
+const DEEPSEEK_BASE_URL = 'https://api.deepseek.com';
 
 export async function POST(req: Request) {
   try {
@@ -22,20 +12,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No content provided' }, { status: 400 });
     }
 
-    const glmKey = process.env.GLM_API_KEY;
-    if (!glmKey) {
-        return NextResponse.json({ error: 'GLM API Key not configured' }, { status: 500 });
+    // Try to get DEEPSEEK_API_KEY, fallback to GLM_API_KEY if configured there
+    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.GLM_API_KEY;
+    
+    if (!apiKey) {
+        return NextResponse.json({ error: 'DeepSeek API Key not configured' }, { status: 500 });
     }
 
-    // Initialize client for GLM-4
+    // Initialize client for DeepSeek
     const client = new OpenAI({
-      baseURL: 'https://open.bigmodel.cn/api/paas/v4/',
-      apiKey: generateZhipuToken(glmKey),
+      baseURL: DEEPSEEK_BASE_URL,
+      apiKey: apiKey, 
     });
 
     // Construct prompt based on file type
-    // GLM-4 is multimodal, but here we process extracted text/OCR content first for robustness
-    // If we wanted to process images directly, we would need to pass base64 image data
     const systemPrompt = `
       You are an expert data analyst. 
       Your task is to extract structured tabular data from the provided unstructured text content (OCR result or parsed document).
@@ -58,11 +48,10 @@ export async function POST(req: Request) {
     const completion = await client.chat.completions.create({
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: content.substring(0, 8000) } // GLM-4 has larger context, safe to increase
+        { role: 'user', content: content.substring(0, 8000) } 
       ],
-      model: 'glm-4',
+      model: 'deepseek-chat', 
       temperature: 0.1,
-      // response_format: { type: 'json_object' } // GLM-4 standard mode handles JSON instruction well
     });
 
     let result = completion.choices[0].message.content || '';
