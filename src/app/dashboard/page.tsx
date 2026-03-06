@@ -127,7 +127,7 @@ export default function Dashboard() {
                     {['bar', 'line', 'pie', 'scatter', 'radar', 'heatmap'].map(t => (
                       <Button
                         key={t}
-                        variant={chartType === t ? 'default' : 'outline'}
+                        variant={chartType === t ? 'primary' : 'outline'}
                         size="sm"
                         onClick={() => setChartType(t as any)}
                         className="capitalize"
