@@ -1,77 +1,55 @@
-# Excel Graph Shower Web App
+# Excel Graph Shower 📊
 
-A full-stack web application designed to demonstrate the capabilities of `mcp-server-chart`. This app allows users to upload various file formats (Excel, PDF, Word, Images), extracts tabular data, and visualizes it using interactive charts.
+一个基于 Next.js 的智能数据可视化平台，支持 Excel、PDF、图片等多模态文件解析，并集成 GLM-4 大模型进行智能数据提取。
 
-## Features
+## ✨ 核心功能
 
-- **Multi-format Support**: Upload Excel (.xlsx), PDF, Word (.docx), and Images.
-- **Intelligent Parsing**:
-  - Excel: Direct data extraction.
-  - PDF/Word: Text and table structure extraction.
-  - Image: OCR (Optical Character Recognition) using Tesseract.js.
-- **Interactive Visualization**:
-  - Bar, Line, Pie, Scatter, Radar, Heatmap charts.
-  - Zoom, Pan, Tooltips, and Save as Image.
-- **User Authentication**: Email/Password login via Supabase.
+*   **多格式支持**：直接上传 `.xlsx`, `.csv`, `.pdf`, `.png`, `.jpg` 文件。
+*   **智能解析**：
+    *   Excel/CSV：基于规则的自动解析。
+    *   PDF/图片：集成 **GLM-4 (智谱AI)** 多模态模型，自动提取非结构化表格数据。
+*   **交互式图表**：
+    *   支持 柱状图、折线图、饼图、散点图、雷达图、热力图。
+    *   **自定义维度/指标**：自由选择 X 轴和 Y 轴字段。
+    *   **智能聚合**：自动对相同维度的数据进行求和汇总。
+*   **安全认证**：集成 Supabase Auth，支持邮箱注册/登录。
 
-## Tech Stack
+## 🛠️ 技术栈
 
-- **Frontend**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS.
-- **Visualization**: Apache ECharts (echarts-for-react).
-- **Data Processing**: `xlsx`, `mammoth`, `pdfjs-dist`, `tesseract.js`.
-- **Backend/Auth**: Supabase.
+*   **前端框架**: Next.js 14 (App Router) + React
+*   **UI 组件**: Tailwind CSS + Lucide Icons
+*   **图表库**: ECharts (echarts-for-react)
+*   **后端服务**: Next.js API Routes
+*   **数据库/认证**: Supabase
+*   **大模型**: ZhipuAI (GLM-4)
 
-## Setup & Run Locally
+## 🚀 本地运行指南
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+1.  **克隆项目**
+    ```bash
+    git clone <your-repo-url>
+    cd chart-web-app
+    ```
 
-2. **Configure Environment Variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-   *Note: For testing without Supabase, the auth flow in the code will fail unless valid credentials are provided or the code is modified to bypass auth.*
+2.  **安装依赖**
+    ```bash
+    npm install
+    ```
 
-3. **Run Development Server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000).
+3.  **配置环境变量**
+    复制 `.env.local` 并填入你的 Key：
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=你的_Supabase_URL
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=你的_Supabase_Anon_Key
+    GLM_API_KEY=你的_智谱AI_Key
+    ```
 
-## Deployment
+4.  **启动开发服务器**
+    ```bash
+    npm run dev
+    ```
+    访问 http://localhost:3000
 
-### Vercel (Recommended)
+## 📦 部署 (Vercel)
 
-1. Push code to GitHub.
-2. Import project into Vercel.
-3. Set Environment Variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) in Vercel Dashboard.
-4. Deploy.
-
-### Supabase Setup
-
-1. Create a new Supabase project.
-2. Enable Email Auth provider.
-3. (Optional) Create a Storage bucket named `uploads` if you want to implement server-side file storage (current implementation processes files client-side for privacy and speed).
-
-## Project Structure
-
-```
-/src
-  /app          # Next.js App Router pages
-    /auth       # Login/Register
-    /dashboard  # Main application
-  /components
-    /charts     # ECharts wrappers
-    /upload     # File upload logic
-    /ui         # Reusable UI components
-  /lib
-    parsers.ts  # File parsing logic (OCR, Excel, etc.)
-    supabase.ts # Supabase client
-```
-
-## Note on OCR and PDF Parsing
-This demo uses client-side libraries (`tesseract.js`, `pdfjs-dist`) to keep the deployment simple and serverless-friendly. For production use with large files, consider moving parsing logic to a Node.js backend or Edge Functions.
+本项目完美适配 Vercel 部署。详细步骤请参考 [DEPLOY_GUIDE.md](./DEPLOY_GUIDE.md)。
